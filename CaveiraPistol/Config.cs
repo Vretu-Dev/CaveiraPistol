@@ -1,5 +1,6 @@
 ﻿using Exiled.API.Enums;
 using Exiled.API.Interfaces;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace CaveiraPistol
@@ -14,8 +15,13 @@ namespace CaveiraPistol
         public float Damage { get; set; } = 50f;
         public float RampageDamageMultiplier { get; set; } = 3f;
         public float RampageDuration { get; set; } = 10;
-        [Description("Check EXILED/Exiled.API/Enums/SpawnLocationType.cs")]
-        public SpawnLocationType SpawnLocation { get; set; } = SpawnLocationType.Inside079Secondary;
+        [Description("Spawn locations with their respective chances. Format: Location: Chance")]
+        public Dictionary<SpawnLocationType, int> SpawnLocations { get; set; } = new Dictionary<SpawnLocationType, int>
+        {
+            { SpawnLocationType.Inside079Secondary, 100 },
+            { SpawnLocationType.InsideHidChamber, 80 }
+        };
+        public float SpawnChance { get; set; } = 100;
         [Description("Should rampage be active when you affected by:")]
         public bool Scp207 { get; set; } = false;
         public bool Scp1853 { get; set; } = false;

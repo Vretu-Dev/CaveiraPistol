@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Linq;
 using CustomPlayerEffects;
 using Exiled.API.Enums;
 using Exiled.API.Features.Attributes;
@@ -25,14 +26,12 @@ namespace CaveiraPistol
         public float DamageMultiplier { get; set; } = Main.Instance.Config.RampageDamageMultiplier;
         public override SpawnProperties SpawnProperties { get; set; } = new SpawnProperties()
         {
-            DynamicSpawnPoints = new List<DynamicSpawnPoint>()
-            {
-                new DynamicSpawnPoint
+            DynamicSpawnPoints = Main.Instance.Config.SpawnLocations
+                .Select(entry => new DynamicSpawnPoint
                 {
-                    Location = Main.Instance.Config.SpawnLocation,
-                    Chance = 100,
-                }
-            }
+                    Location = entry.Key,
+                    Chance = entry.Value
+                }).ToList()
         };
         public override AttachmentName[] Attachments { get; set; } = new[]
         {

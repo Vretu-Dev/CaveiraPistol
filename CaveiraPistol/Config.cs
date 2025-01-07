@@ -21,7 +21,6 @@ namespace CaveiraPistol
             { SpawnLocationType.Inside079Secondary, 100 },
             { SpawnLocationType.InsideHidChamber, 80 }
         };
-        public float SpawnChance { get; set; } = 100;
         [Description("Should rampage be active when you affected by:")]
         public bool Scp207 { get; set; } = false;
         public bool Scp1853 { get; set; } = false;

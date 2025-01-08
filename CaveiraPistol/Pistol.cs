@@ -36,7 +36,9 @@ namespace CaveiraPistol
         };
         public override AttachmentName[] Attachments { get; set; } = new[]
         {
+        AttachmentName.None,
         AttachmentName.SoundSuppressor,
+        AttachmentName.StandardMagJHP,
         };
         protected override void SubscribeEvents()
         {

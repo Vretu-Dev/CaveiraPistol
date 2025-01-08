@@ -5,6 +5,7 @@ using Exiled.API.Enums;
 using Exiled.API.Features.Attributes;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
+using Exiled.Events.EventArgs.Item;
 using Exiled.Events.EventArgs.Player;
 using InventorySystem.Items.Firearms.Attachments;
 using PlayerRoles;
@@ -16,7 +17,7 @@ namespace CaveiraPistol
     public class Com18BoostItem : CustomWeapon
     {
         public override ItemType Type { get; set; } = ItemType.GunCOM15;
-        public override uint Id { get; set; } = 55;
+        public override uint Id { get; set; } = 122;
         public override string Name { get; set; } = "Caveira Pistol";
         public override string Description { get; set; } = "Kill Everyone!";
         public override float Damage { get; set; } = Main.Instance.Config.Damage;
@@ -41,6 +42,7 @@ namespace CaveiraPistol
         {
             Exiled.Events.Handlers.Player.Hurting += OnHurting;
             Exiled.Events.Handlers.Player.ChangedItem += OnChangedItem;
+            Exiled.Events.Handlers.Item.ChangingAttachments += ChangingAttachmentEvent;
 
             base.SubscribeEvents();
         }
@@ -48,8 +50,19 @@ namespace CaveiraPistol
         {
             Exiled.Events.Handlers.Player.Hurting -= OnHurting;
             Exiled.Events.Handlers.Player.ChangedItem -= OnChangedItem;
+            Exiled.Events.Handlers.Item.ChangingAttachments -= ChangingAttachmentEvent;
 
             base.UnsubscribeEvents();
+        }
+        public void ChangingAttachmentEvent(ChangingAttachmentsEventArgs ev)
+        {
+            if (Check(ev.Item))
+            {
+                if (TryGet(ev.Player.CurrentItem, out var item) && item.Id == 122)
+                {
+                    ev.IsAllowed = false;
+                }
+            }
         }
         private void OnChangedItem(ChangedItemEventArgs ev)
         {

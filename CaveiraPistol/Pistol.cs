@@ -1,8 +1,6 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using CustomPlayerEffects;
 using Exiled.API.Enums;
-using Exiled.API.Extensions;
 using Exiled.API.Features.Attributes;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
@@ -71,11 +69,21 @@ namespace CaveiraPistol
         {
             if (Check(ev.Player.CurrentItem))
             {
-                ev.Player.DisableEffect(EffectType.MovementBoost);
-                ev.Player.DisableEffect(EffectType.SilentWalk);
-                ev.Player.DisableEffect(EffectType.Scanned);
-                ev.Player.DisableEffect(EffectType.Vitality);
-                ev.Player.DisableEffect(EffectType.Scp1344);
+                if (ev.Player.Items.FirstOrDefault(item => item.Type == ItemType.SCP1344)?.Is<Exiled.API.Features.Items.Scp1344>(out var google) == true && google.IsWorn)
+                {
+                    ev.Player.DisableEffect(EffectType.MovementBoost);
+                    ev.Player.DisableEffect(EffectType.SilentWalk);
+                    ev.Player.DisableEffect(EffectType.Scanned);
+                    ev.Player.DisableEffect(EffectType.Vitality);
+                }
+                else
+                {
+                    ev.Player.DisableEffect(EffectType.MovementBoost);
+                    ev.Player.DisableEffect(EffectType.SilentWalk);
+                    ev.Player.DisableEffect(EffectType.Scanned);
+                    ev.Player.DisableEffect(EffectType.Vitality);
+                    ev.Player.DisableEffect(EffectType.Scp1344);
+                }
             }
         }
         protected override void OnHurting(HurtingEventArgs ev)
@@ -116,11 +124,24 @@ namespace CaveiraPistol
                         if (Main.Instance.Config.Hint)
                             ev.Player.ShowHint("<color=red>Rampage Activated</color>", 2f);
 
-                    ev.Player.EnableEffect(EffectType.MovementBoost, 40, Main.Instance.Config.RampageDuration);
-                    ev.Player.EnableEffect(EffectType.SilentWalk, 10, Main.Instance.Config.RampageDuration);
-                    ev.Player.EnableEffect(EffectType.Scanned, 10, Main.Instance.Config.RampageDuration);
-                    ev.Player.EnableEffect(EffectType.Vitality, 10, Main.Instance.Config.RampageDuration);
-                    ev.Player.EnableEffect(EffectType.Scp1344, 10, Main.Instance.Config.RampageDuration);
+                    if (Check(ev.Player.CurrentItem))
+                    { 
+                        if (ev.Player.Items.FirstOrDefault(item => item.Type == ItemType.SCP1344)?.Is<Exiled.API.Features.Items.Scp1344>(out var google) == true && google.IsWorn)
+                        {
+                            ev.Player.EnableEffect(EffectType.MovementBoost, 40, Main.Instance.Config.RampageDuration);
+                            ev.Player.EnableEffect(EffectType.SilentWalk, 10, Main.Instance.Config.RampageDuration);
+                            ev.Player.EnableEffect(EffectType.Scanned, 10, Main.Instance.Config.RampageDuration);
+                            ev.Player.EnableEffect(EffectType.Vitality, 10, Main.Instance.Config.RampageDuration);
+                        }
+                        else
+                        {
+                            ev.Player.EnableEffect(EffectType.MovementBoost, 40, Main.Instance.Config.RampageDuration);
+                            ev.Player.EnableEffect(EffectType.SilentWalk, 10, Main.Instance.Config.RampageDuration);
+                            ev.Player.EnableEffect(EffectType.Scanned, 10, Main.Instance.Config.RampageDuration);
+                            ev.Player.EnableEffect(EffectType.Vitality, 10, Main.Instance.Config.RampageDuration);
+                            ev.Player.EnableEffect(EffectType.Scp1344, 10, Main.Instance.Config.RampageDuration);
+                        }
+                    }
                 }
             }
         }

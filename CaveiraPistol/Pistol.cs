@@ -73,6 +73,7 @@ namespace CaveiraPistol
                 ev.Player.DisableEffect(EffectType.MovementBoost);
                 ev.Player.DisableEffect(EffectType.SilentWalk);
                 ev.Player.DisableEffect(EffectType.Scanned);
+                ev.Player.DisableEffect(EffectType.Vitality);
             }
         }
         protected override void OnHurting(HurtingEventArgs ev)
@@ -102,17 +103,21 @@ namespace CaveiraPistol
 
             if (ev.Attacker != ev.Player)
             {
-                if (!Main.Instance.Config.Scp207 && ev.Player.IsEffectActive<Scp207>())
-                    return;
-                if (!Main.Instance.Config.Scp1853 && ev.Player.IsEffectActive<Scp1853>())
-                    return;
-                if (!Main.Instance.Config.Antiscp207 && ev.Player.IsEffectActive<AntiScp207>())
-                    return;
-                if (Main.Instance.Config.Hint)
-                    ev.Player.ShowHint("<color=red>Rampage Activated</color>", 2f);
-                ev.Player.EnableEffect(EffectType.MovementBoost, 40, Main.Instance.Config.RampageDuration);
-                ev.Player.EnableEffect(EffectType.SilentWalk, 10, Main.Instance.Config.RampageDuration);
-                ev.Player.EnableEffect(EffectType.Scanned, 10, Main.Instance.Config.RampageDuration);
+                if (ev.DamageHandler.Type == DamageType.Firearm || ev.DamageHandler.Type == DamageType.Explosion)
+                {
+                    if (!Main.Instance.Config.Scp207 && ev.Player.IsEffectActive<Scp207>())
+                        return;
+                    if (!Main.Instance.Config.Scp1853 && ev.Player.IsEffectActive<Scp1853>())
+                        return;
+                    if (!Main.Instance.Config.Antiscp207 && ev.Player.IsEffectActive<AntiScp207>())
+                        return;
+                    if (Main.Instance.Config.Hint)
+                        ev.Player.ShowHint("<color=red>Rampage Activated</color>", 2f);
+                    ev.Player.EnableEffect(EffectType.MovementBoost, 40, Main.Instance.Config.RampageDuration);
+                    ev.Player.EnableEffect(EffectType.SilentWalk, 10, Main.Instance.Config.RampageDuration);
+                    ev.Player.EnableEffect(EffectType.Scanned, 10, Main.Instance.Config.RampageDuration);
+                    ev.Player.EnableEffect(EffectType.Vitality, 10, Main.Instance.Config.RampageDuration);
+                }
             }
         }
     }

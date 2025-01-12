@@ -2,6 +2,7 @@
 using System.Linq;
 using CustomPlayerEffects;
 using Exiled.API.Enums;
+using Exiled.API.Extensions;
 using Exiled.API.Features.Attributes;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
@@ -43,7 +44,7 @@ namespace CaveiraPistol
         protected override void SubscribeEvents()
         {
             Exiled.Events.Handlers.Player.Hurting += OnHurting;
-            Exiled.Events.Handlers.Player.ChangedItem += OnChangedItem;
+            Exiled.Events.Handlers.Player.ChangingItem += OnChangedItem;
             Exiled.Events.Handlers.Item.ChangingAttachments += ChangingAttachmentEvent;
 
             base.SubscribeEvents();
@@ -51,7 +52,7 @@ namespace CaveiraPistol
         protected override void UnsubscribeEvents()
         {
             Exiled.Events.Handlers.Player.Hurting -= OnHurting;
-            Exiled.Events.Handlers.Player.ChangedItem -= OnChangedItem;
+            Exiled.Events.Handlers.Player.ChangingItem -= OnChangedItem;
             Exiled.Events.Handlers.Item.ChangingAttachments -= ChangingAttachmentEvent;
 
             base.UnsubscribeEvents();
@@ -66,14 +67,15 @@ namespace CaveiraPistol
                 }
             }
         }
-        private void OnChangedItem(ChangedItemEventArgs ev)
+        private void OnChangedItem(ChangingItemEventArgs ev)
         {
-            if (!Check(ev.Player.CurrentItem))
+            if (Check(ev.Player.CurrentItem))
             {
                 ev.Player.DisableEffect(EffectType.MovementBoost);
                 ev.Player.DisableEffect(EffectType.SilentWalk);
                 ev.Player.DisableEffect(EffectType.Scanned);
                 ev.Player.DisableEffect(EffectType.Vitality);
+                ev.Player.DisableEffect(EffectType.Scp1344);
             }
         }
         protected override void OnHurting(HurtingEventArgs ev)
@@ -104,19 +106,21 @@ namespace CaveiraPistol
             if (ev.Attacker != ev.Player)
             {
                 if (ev.DamageHandler.Type == DamageType.Firearm || ev.DamageHandler.Type == DamageType.Explosion)
-                {
-                    if (!Main.Instance.Config.Scp207 && ev.Player.IsEffectActive<Scp207>())
-                        return;
-                    if (!Main.Instance.Config.Scp1853 && ev.Player.IsEffectActive<Scp1853>())
-                        return;
-                    if (!Main.Instance.Config.Antiscp207 && ev.Player.IsEffectActive<AntiScp207>())
-                        return;
-                    if (Main.Instance.Config.Hint)
-                        ev.Player.ShowHint("<color=red>Rampage Activated</color>", 2f);
+                    {
+                        if (!Main.Instance.Config.Scp207 && ev.Player.IsEffectActive<Scp207>())
+                            return;
+                        if (!Main.Instance.Config.Scp1853 && ev.Player.IsEffectActive<Scp1853>())
+                            return;
+                        if (!Main.Instance.Config.Antiscp207 && ev.Player.IsEffectActive<AntiScp207>())
+                            return;
+                        if (Main.Instance.Config.Hint)
+                            ev.Player.ShowHint("<color=red>Rampage Activated</color>", 2f);
+
                     ev.Player.EnableEffect(EffectType.MovementBoost, 40, Main.Instance.Config.RampageDuration);
                     ev.Player.EnableEffect(EffectType.SilentWalk, 10, Main.Instance.Config.RampageDuration);
                     ev.Player.EnableEffect(EffectType.Scanned, 10, Main.Instance.Config.RampageDuration);
                     ev.Player.EnableEffect(EffectType.Vitality, 10, Main.Instance.Config.RampageDuration);
+                    ev.Player.EnableEffect(EffectType.Scp1344, 10, Main.Instance.Config.RampageDuration);
                 }
             }
         }

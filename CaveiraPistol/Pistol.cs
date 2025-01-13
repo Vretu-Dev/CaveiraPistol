@@ -2,6 +2,7 @@
 using CustomPlayerEffects;
 using Exiled.API.Enums;
 using Exiled.API.Features.Attributes;
+using Exiled.API.Features.Pickups;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Item;
@@ -43,6 +44,7 @@ namespace CaveiraPistol
         {
             Exiled.Events.Handlers.Player.Hurting += OnHurting;
             Exiled.Events.Handlers.Player.ChangingItem += OnChangedItem;
+            Exiled.Events.Handlers.Player.PickingUpItem += OnPickingUpItem;
             Exiled.Events.Handlers.Item.ChangingAttachments += ChangingAttachmentEvent;
 
             base.SubscribeEvents();
@@ -51,9 +53,21 @@ namespace CaveiraPistol
         {
             Exiled.Events.Handlers.Player.Hurting -= OnHurting;
             Exiled.Events.Handlers.Player.ChangingItem -= OnChangedItem;
+            Exiled.Events.Handlers.Player.PickingUpItem -= OnPickingUpItem;
             Exiled.Events.Handlers.Item.ChangingAttachments -= ChangingAttachmentEvent;
 
             base.UnsubscribeEvents();
+        }
+        public void OnPickingUpItem(PickingUpItemEventArgs ev)
+        {
+            // Sprawdź, czy gracz podnosi przedmiot typu COM15
+            if (ev.Pickup.Type == ItemType.GunCOM15)
+            {
+                if (ev.Pickup.Type == ItemType.GunCOM15 && ev.Pickup.Is<FirearmPickup>(out FirearmPickup fp))
+                {
+                    fp.Attachments = 19;
+                }               
+            }
         }
         public void ChangingAttachmentEvent(ChangingAttachmentsEventArgs ev)
         {

@@ -58,17 +58,6 @@ namespace CaveiraPistol
 
             base.UnsubscribeEvents();
         }
-        public void OnPickingUpItem(PickingUpItemEventArgs ev)
-        {
-            // Sprawdź, czy gracz podnosi przedmiot typu COM15
-            if (ev.Pickup.Type == ItemType.GunCOM15)
-            {
-                if (ev.Pickup.Type == ItemType.GunCOM15 && ev.Pickup.Is<FirearmPickup>(out FirearmPickup fp))
-                {
-                    fp.Attachments = 19;
-                }               
-            }
-        }
         public void ChangingAttachmentEvent(ChangingAttachmentsEventArgs ev)
         {
             if (Check(ev.Item))

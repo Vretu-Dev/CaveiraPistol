@@ -21,7 +21,7 @@ namespace CaveiraPistol
         public override string Name { get; set; } = "Caveira Pistol";
         public override string Description { get; set; } = "Kill Everyone!";
         public override float Damage { get; set; } = Main.Instance.Config.Damage;
-        public override byte ClipSize { get; set; } = 10;
+        public override byte ClipSize { get; set; } = 11;
         public override bool FriendlyFire { get; set; } = true;
         public override float Weight { get; set; } = 1f;
         public float DamageMultiplier { get; set; } = Main.Instance.Config.RampageDamageMultiplier;

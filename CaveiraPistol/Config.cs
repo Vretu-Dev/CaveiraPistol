@@ -14,7 +14,7 @@ namespace CaveiraPistol
         public bool Hint { get; set; } = true;
         public float Damage { get; set; } = 40f;
         public float RampageDamageMultiplier { get; set; } = 2f;
-        public float RampageDuration { get; set; } = 11;
+        public float RampageDuration { get; set; } = 10;
         [Description("Spawn locations with their respective chances. Format: Location: Chance")]
         public Dictionary<SpawnLocationType, int> SpawnLocations { get; set; } = new Dictionary<SpawnLocationType, int>
         {

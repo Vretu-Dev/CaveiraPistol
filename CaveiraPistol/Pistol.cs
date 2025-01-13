@@ -124,8 +124,8 @@ namespace CaveiraPistol
             if (!Check(ev.Player.CurrentItem))
                 return;
 
-            //if (ev.Attacker != ev.Player)
-            //{
+            if (ev.Attacker != ev.Player)
+            {
                 if (ev.DamageHandler.Type == DamageType.Firearm || ev.DamageHandler.Type == DamageType.Explosion)
                     {
                         if (!Main.Instance.Config.Scp207 && ev.Player.IsEffectActive<Scp207>())
@@ -155,7 +155,7 @@ namespace CaveiraPistol
                             ev.Player.EnableEffect(EffectType.Scp1344, 10, Main.Instance.Config.RampageDuration);
                         }
                     }
-               // }
+                }
             }
         }
     }

@@ -65,7 +65,7 @@ namespace CaveiraPistol
             {
                 ev.IsAllowed = false;
                 ev.Pickup.Destroy();
-                Server.ExecuteCommand($"customitems give 122 {ev.Player.Nickname}");
+                customItem.Give(ev.Player);
             }
         }
         public void ChangingAttachmentEvent(ChangingAttachmentsEventArgs ev)

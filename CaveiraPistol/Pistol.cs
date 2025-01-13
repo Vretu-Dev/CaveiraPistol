@@ -44,7 +44,6 @@ namespace CaveiraPistol
         {
             Exiled.Events.Handlers.Player.Hurting += OnHurting;
             Exiled.Events.Handlers.Player.ChangingItem += OnChangedItem;
-            Exiled.Events.Handlers.Player.PickingUpItem += OnPickingUpItem;
             Exiled.Events.Handlers.Item.ChangingAttachments += ChangingAttachmentEvent;
 
             base.SubscribeEvents();
@@ -53,7 +52,6 @@ namespace CaveiraPistol
         {
             Exiled.Events.Handlers.Player.Hurting -= OnHurting;
             Exiled.Events.Handlers.Player.ChangingItem -= OnChangedItem;
-            Exiled.Events.Handlers.Player.PickingUpItem -= OnPickingUpItem;
             Exiled.Events.Handlers.Item.ChangingAttachments -= ChangingAttachmentEvent;
 
             base.UnsubscribeEvents();

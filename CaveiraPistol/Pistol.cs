@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using CustomPlayerEffects;
 using Exiled.API.Enums;
+using Exiled.API.Features;
 using Exiled.API.Features.Attributes;
-using Exiled.API.Features.Pickups;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Item;
@@ -16,12 +16,12 @@ namespace CaveiraPistol
     [CustomItem(ItemType.GunCOM15)]
     public class Com18BoostItem : CustomWeapon
     {
-        public override ItemType Type { get; set; } = ItemType.GunCOM15;
+        public override ItemType Type { get; set; } = ItemType.GunCOM18;
         public override uint Id { get; set; } = 122;
         public override string Name { get; set; } = "Caveira Pistol";
         public override string Description { get; set; } = "Kill Everyone!";
         public override float Damage { get; set; } = Main.Instance.Config.Damage;
-        public override byte ClipSize { get; set; } = 12;
+        public override byte ClipSize { get; set; } = 10;
         public override bool FriendlyFire { get; set; } = true;
         public override float Weight { get; set; } = 1f;
         public float DamageMultiplier { get; set; } = Main.Instance.Config.RampageDamageMultiplier;
@@ -38,13 +38,15 @@ namespace CaveiraPistol
         {
         AttachmentName.None,
         AttachmentName.SoundSuppressor,
-        AttachmentName.StandardMagJHP,
+        AttachmentName.StandardMagAP,
+        AttachmentName.IronSights,
         };
         protected override void SubscribeEvents()
         {
             Exiled.Events.Handlers.Player.Hurting += OnHurting;
             Exiled.Events.Handlers.Player.ChangingItem += OnChangedItem;
             Exiled.Events.Handlers.Item.ChangingAttachments += ChangingAttachmentEvent;
+            Exiled.Events.Handlers.Player.PickingUpItem += OnPickingUpItem;
 
             base.SubscribeEvents();
         }
@@ -53,8 +55,18 @@ namespace CaveiraPistol
             Exiled.Events.Handlers.Player.Hurting -= OnHurting;
             Exiled.Events.Handlers.Player.ChangingItem -= OnChangedItem;
             Exiled.Events.Handlers.Item.ChangingAttachments -= ChangingAttachmentEvent;
+            Exiled.Events.Handlers.Player.PickingUpItem -= OnPickingUpItem;
 
             base.UnsubscribeEvents();
+        }
+        private void OnPickingUpItem(PickingUpItemEventArgs ev)
+        {
+            if (TryGet(ev.Pickup, out var customItem) && customItem.Id == 122)
+            {
+                ev.IsAllowed = false;
+                ev.Pickup.Destroy();
+                Server.ExecuteCommand($"customitems give 122 {ev.Player.Nickname}");
+            }
         }
         public void ChangingAttachmentEvent(ChangingAttachmentsEventArgs ev)
         {
@@ -112,8 +124,8 @@ namespace CaveiraPistol
             if (!Check(ev.Player.CurrentItem))
                 return;
 
-            if (ev.Attacker != ev.Player)
-            {
+            //if (ev.Attacker != ev.Player)
+            //{
                 if (ev.DamageHandler.Type == DamageType.Firearm || ev.DamageHandler.Type == DamageType.Explosion)
                     {
                         if (!Main.Instance.Config.Scp207 && ev.Player.IsEffectActive<Scp207>())
@@ -143,7 +155,7 @@ namespace CaveiraPistol
                             ev.Player.EnableEffect(EffectType.Scp1344, 10, Main.Instance.Config.RampageDuration);
                         }
                     }
-                }
+               // }
             }
         }
     }

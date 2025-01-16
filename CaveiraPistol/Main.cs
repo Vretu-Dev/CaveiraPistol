@@ -9,8 +9,8 @@ namespace CaveiraPistol
         public override string Name => "CaveiraPistol";
         public override string Author => "Vretu";
         public override string Prefix { get; } = "Caveira";
-        public override Version RequiredExiledVersion { get; } = new Version(9, 0, 0);
-        public override Version Version => new Version(1, 1, 0);
+        public override Version RequiredExiledVersion { get; } = new Version(9, 4, 0);
+        public override Version Version => new Version(1, 1, 1);
         public static Main Instance { get; private set; }
 
         public override void OnEnabled()

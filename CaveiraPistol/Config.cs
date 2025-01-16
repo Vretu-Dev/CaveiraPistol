@@ -12,9 +12,11 @@ namespace CaveiraPistol
         public bool Debug { get; set; } = false;
         [Description("Notifies when rampage is activated.")]
         public bool Hint { get; set; } = true;
+        public float HintDuration { get; set; } = 4f;
         public float Damage { get; set; } = 40f;
         public float RampageDamageMultiplier { get; set; } = 2f;
-        public float RampageDuration { get; set; } = 10;
+        public float RampageDuration { get; set; } = 10f;
+        public float RampageWindowActivation { get; set; } = 30f;
         [Description("Spawn locations with their respective chances. Format: Location: Chance")]
         public Dictionary<SpawnLocationType, int> SpawnLocations { get; set; } = new Dictionary<SpawnLocationType, int>
         {
@@ -25,5 +27,10 @@ namespace CaveiraPistol
         public bool Scp207 { get; set; } = false;
         public bool Scp1853 { get; set; } = false;
         public bool Antiscp207 { get; set; } = false;
+        [Description("Translations:")]
+        public string RampageActivated { get; set; } = "<color=green>Rampage Mode activated!</color>";
+        public string RampageFailUse { get; set; } = "<color=red>Using Rampage mode is not possible.</color>";
+        public string WindowTimeActive { get; set; } = "<color=yellow>You took damage: Rampage can be used within 30 seconds!</color>";
+        public string WindowTimeExpired { get; set; } = "<color=yellow>The time to use Rampage has expired.</color>";
     }
 }

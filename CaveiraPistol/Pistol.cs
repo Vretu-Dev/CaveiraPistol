@@ -1,15 +1,19 @@
 ﻿using System.Linq;
+using System.Collections.Generic;
 using CustomPlayerEffects;
 using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.API.Features.Attributes;
+using Exiled.API.Features.Core.UserSettings;
 using Exiled.API.Features.Spawn;
 using Exiled.CustomItems.API.Features;
 using Exiled.Events.EventArgs.Item;
 using Exiled.Events.EventArgs.Player;
 using InventorySystem.Items.Firearms.Attachments;
+using MEC;
 using PlayerRoles;
 using PlayerStatsSystem;
+using UnityEngine;
 
 namespace CaveiraPistol
 {
@@ -25,6 +29,9 @@ namespace CaveiraPistol
         public override bool FriendlyFire { get; set; } = true;
         public override float Weight { get; set; } = 1f;
         public float DamageMultiplier { get; set; } = Main.Instance.Config.RampageDamageMultiplier;
+        private Dictionary<Player, CoroutineHandle> effectWindows = new Dictionary<Player, CoroutineHandle>();
+        private Dictionary<Player, KeyCode> playerKeybinds = new Dictionary<Player, KeyCode>();
+        private KeybindSetting rampageKeybind;
         public override SpawnProperties SpawnProperties { get; set; } = new SpawnProperties()
         {
             DynamicSpawnPoints = Main.Instance.Config.SpawnLocations
@@ -48,6 +55,15 @@ namespace CaveiraPistol
             Exiled.Events.Handlers.Item.ChangingAttachments += ChangingAttachmentEvent;
             Exiled.Events.Handlers.Player.PickingUpItem += OnPickingUpItem;
 
+            rampageKeybind = new KeybindSetting(
+                id: 111,
+                label: "Caveira Pistol | Rampage Mode",
+                suggested: KeyCode.B,
+                hintDescription: "Press key to activate rampage.",
+                onChanged: OnKeybindChanged
+            );
+            SettingBase.Register(new[] { rampageKeybind });
+
             base.SubscribeEvents();
         }
         protected override void UnsubscribeEvents()
@@ -56,8 +72,25 @@ namespace CaveiraPistol
             Exiled.Events.Handlers.Player.ChangingItem -= OnChangedItem;
             Exiled.Events.Handlers.Item.ChangingAttachments -= ChangingAttachmentEvent;
             Exiled.Events.Handlers.Player.PickingUpItem -= OnPickingUpItem;
-
+            SettingBase.Unregister(settings: new[] { rampageKeybind });
             base.UnsubscribeEvents();
+        }
+        private void OnKeybindChanged(Player player, SettingBase setting)
+        {
+            if (setting is KeybindSetting keybind)
+            {
+                playerKeybinds[player] = keybind.KeyCode;
+
+                if (effectWindows.ContainsKey(player) && keybind.KeyCode == playerKeybinds[player] && Check(player.CurrentItem))
+                {
+                    ActivateEffects(player);
+                }
+                else
+                {
+                    if (Main.Instance.Config.Hint)
+                        player.ShowHint(Main.Instance.Config.RampageFailUse, 2f);
+                }
+            }
         }
         private void OnPickingUpItem(PickingUpItemEventArgs ev)
         {
@@ -124,8 +157,8 @@ namespace CaveiraPistol
             if (!Check(ev.Player.CurrentItem))
                 return;
 
-            if (ev.Attacker != ev.Player)
-            {
+            //if (ev.Attacker != ev.Player)
+            //{
                 if (ev.DamageHandler.Type == DamageType.Firearm || ev.DamageHandler.Type == DamageType.Explosion)
                     {
                         if (!Main.Instance.Config.Scp207 && ev.Player.IsEffectActive<Scp207>())
@@ -135,28 +168,60 @@ namespace CaveiraPistol
                         if (!Main.Instance.Config.Antiscp207 && ev.Player.IsEffectActive<AntiScp207>())
                             return;
                         if (Main.Instance.Config.Hint)
-                            ev.Player.ShowHint("<color=red>Rampage Activated</color>", 2f);
+                            ev.Player.ShowHint(Main.Instance.Config.WindowTimeActive, Main.Instance.Config.HintDuration);
 
                     if (Check(ev.Player.CurrentItem))
-                    { 
-                        if (ev.Player.Items.FirstOrDefault(item => item.Type == ItemType.SCP1344)?.Is<Exiled.API.Features.Items.Scp1344>(out var google) == true && google.IsWorn)
+                    {
+                        if (effectWindows.ContainsKey(ev.Player))
                         {
-                            ev.Player.EnableEffect(EffectType.MovementBoost, 40, Main.Instance.Config.RampageDuration);
-                            ev.Player.EnableEffect(EffectType.SilentWalk, 10, Main.Instance.Config.RampageDuration);
-                            ev.Player.EnableEffect(EffectType.Scanned, 10, Main.Instance.Config.RampageDuration);
-                            ev.Player.EnableEffect(EffectType.Vitality, 10, Main.Instance.Config.RampageDuration);
+                            Timing.KillCoroutines(effectWindows[ev.Player]);
+                            effectWindows.Remove(ev.Player);
                         }
-                        else
-                        {
-                            ev.Player.EnableEffect(EffectType.MovementBoost, 40, Main.Instance.Config.RampageDuration);
-                            ev.Player.EnableEffect(EffectType.SilentWalk, 10, Main.Instance.Config.RampageDuration);
-                            ev.Player.EnableEffect(EffectType.Scanned, 10, Main.Instance.Config.RampageDuration);
-                            ev.Player.EnableEffect(EffectType.Vitality, 10, Main.Instance.Config.RampageDuration);
-                            ev.Player.EnableEffect(EffectType.Scp1344, 10, Main.Instance.Config.RampageDuration);
-                        }
+
+                        effectWindows[ev.Player] = Timing.RunCoroutine(EffectWindow(ev.Player));
                     }
                 }
+            //}
+        }
+        private IEnumerator<float> EffectWindow(Player player)
+        {
+            float duration = Main.Instance.Config.RampageWindowActivation;
+
+            yield return Timing.WaitForSeconds(duration);
+
+            if (effectWindows.ContainsKey(player))
+            {
+                effectWindows.Remove(player);
+                if (Main.Instance.Config.Hint)
+                    player.ShowHint(Main.Instance.Config.WindowTimeExpired, Main.Instance.Config.HintDuration);
+            }
+        }
+        public void ActivateEffects(Player player)
+        {
+            if (player.Items.FirstOrDefault(item => item.Type == ItemType.SCP1344)?.Is<Exiled.API.Features.Items.Scp1344>(out var google) == true && google.IsWorn)
+            {
+                player.EnableEffect(EffectType.MovementBoost, 40, Main.Instance.Config.RampageDuration);
+                player.EnableEffect(EffectType.SilentWalk, 10, Main.Instance.Config.RampageDuration);
+                player.EnableEffect(EffectType.Scanned, 10, Main.Instance.Config.RampageDuration);
+                player.EnableEffect(EffectType.Vitality, 10, Main.Instance.Config.RampageDuration);
+            }
+            else
+            {
+                player.EnableEffect(EffectType.MovementBoost, 40, Main.Instance.Config.RampageDuration);
+                player.EnableEffect(EffectType.SilentWalk, 10, Main.Instance.Config.RampageDuration);
+                player.EnableEffect(EffectType.Scanned, 10, Main.Instance.Config.RampageDuration);
+                player.EnableEffect(EffectType.Vitality, 10, Main.Instance.Config.RampageDuration);
+                player.EnableEffect(EffectType.Scp1344, 10, Main.Instance.Config.RampageDuration);
+            }
+
+            if (Main.Instance.Config.Hint)
+                player.ShowHint(Main.Instance.Config.RampageActivated, Main.Instance.Config.HintDuration);
+
+            if (effectWindows.ContainsKey(player))
+            {
+                Timing.KillCoroutines(effectWindows[player]);
+                effectWindows.Remove(player);
             }
         }
     }
-} 
+}

@@ -28,9 +28,9 @@ namespace CaveiraPistol
         public bool Scp1853 { get; set; } = false;
         public bool Antiscp207 { get; set; } = false;
         [Description("Translations:")]
-        public string RampageActivated { get; set; } = "<color=green>Rampage mode active!</color>";
-        public string RampageFailUse { get; set; } = "<color=red>Rampage cannot be used.</color>";
-        public string WindowTimeActive { get; set; } = "<color=yellow>Press key to activate Rampage!</color>";
-        public string WindowTimeExpired { get; set; } = "<color=yellow>The activation time expired.</color>";
+        public string RampageActivated { get; set; } = "Rampage mode active!";
+        public string RampageFailUse { get; set; } = "Rampage cannot be used.";
+        public string WindowTimeActive { get; set; } = "Press key to activate Rampage!";
+        public string WindowTimeExpired { get; set; } = "The activation time expired.";
     }
 }

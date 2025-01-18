@@ -14,6 +14,7 @@ using MEC;
 using PlayerRoles;
 using PlayerStatsSystem;
 using UnityEngine;
+using System;
 
 namespace CaveiraPistol
 {
@@ -88,7 +89,7 @@ namespace CaveiraPistol
                 else
                 {
                     if (Main.Instance.Config.Hint && Check(player.CurrentItem))
-                        player.ShowHint(Main.Instance.Config.RampageFailUse, 2f);
+                        player.ShowHint($"<color=red>{new string('\n', 5)}{string.Format(Main.Instance.Config.RampageFailUse)}</color>", 2);
                 }
             }
         }
@@ -168,7 +169,7 @@ namespace CaveiraPistol
                         if (!Main.Instance.Config.Antiscp207 && ev.Player.IsEffectActive<AntiScp207>())
                             return;
                         if (Main.Instance.Config.Hint)
-                            ev.Player.ShowHint(Main.Instance.Config.WindowTimeActive, Main.Instance.Config.HintDuration);
+                            ev.Player.ShowHint($"<color=yellow>{new string('\n', 5)}{string.Format(Main.Instance.Config.WindowTimeActive)}</color>", Main.Instance.Config.HintDuration);
 
                     if (Check(ev.Player.CurrentItem))
                     {
@@ -193,7 +194,7 @@ namespace CaveiraPistol
             {
                 effectWindows.Remove(player);
                 if (Main.Instance.Config.Hint)
-                    player.ShowHint(Main.Instance.Config.WindowTimeExpired, Main.Instance.Config.HintDuration);
+                    player.ShowHint($"<color=yellow>{new string('\n', 5)}{string.Format(Main.Instance.Config.WindowTimeExpired)}</color>", Main.Instance.Config.HintDuration);
             }
         }
         public void ActivateEffects(Player player)
@@ -215,7 +216,7 @@ namespace CaveiraPistol
             }
 
             if (Main.Instance.Config.Hint)
-                player.ShowHint(Main.Instance.Config.RampageActivated, Main.Instance.Config.HintDuration);
+                player.ShowHint($"<color=green>{new string('\n', 5)}{string.Format(Main.Instance.Config.RampageActivated)}</color>", Main.Instance.Config.HintDuration);
 
             if (effectWindows.ContainsKey(player))
             {

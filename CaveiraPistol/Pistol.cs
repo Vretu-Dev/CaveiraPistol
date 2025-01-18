@@ -87,7 +87,7 @@ namespace CaveiraPistol
                 }
                 else
                 {
-                    if (Main.Instance.Config.Hint)
+                    if (Main.Instance.Config.Hint && Check(player.CurrentItem))
                         player.ShowHint(Main.Instance.Config.RampageFailUse, 2f);
                 }
             }
@@ -159,7 +159,7 @@ namespace CaveiraPistol
 
             if (ev.Attacker != ev.Player)
             {
-                if (ev.DamageHandler.Type == DamageType.Firearm || ev.DamageHandler.Type == DamageType.Explosion)
+                if (ev.DamageHandler.Base is FirearmDamageHandler || ev.DamageHandler.Type == DamageType.Explosion)
                     {
                         if (!Main.Instance.Config.Scp207 && ev.Player.IsEffectActive<Scp207>())
                             return;

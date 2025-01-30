@@ -30,9 +30,12 @@ namespace CaveiraPistol
         public override bool FriendlyFire { get; set; } = true;
         public override float Weight { get; set; } = 1f;
         public float DamageMultiplier { get; set; } = Main.Instance.Config.RampageDamageMultiplier;
+        public HeaderSetting SettingsHeader { get; set; } = new HeaderSetting("Caveira Pistol");
+
         private Dictionary<Player, CoroutineHandle> effectWindows = new Dictionary<Player, CoroutineHandle>();
         private Dictionary<Player, KeyCode> playerKeybinds = new Dictionary<Player, KeyCode>();
         private KeybindSetting rampageKeybind;
+        
         public override SpawnProperties SpawnProperties { get; set; } = new SpawnProperties()
         {
             DynamicSpawnPoints = Main.Instance.Config.SpawnLocations
@@ -58,11 +61,12 @@ namespace CaveiraPistol
 
             rampageKeybind = new KeybindSetting(
                 id: 111,
-                label: "Caveira Pistol | Rampage Mode",
+                label: "Rampage Mode",
                 suggested: KeyCode.B,
                 hintDescription: "Press key to activate rampage.",
                 onChanged: OnKeybindChanged
             );
+            SettingBase.Register(new[] { SettingsHeader });
             SettingBase.Register(new[] { rampageKeybind });
 
             base.SubscribeEvents();
@@ -73,6 +77,7 @@ namespace CaveiraPistol
             Exiled.Events.Handlers.Player.ChangingItem -= OnChangedItem;
             Exiled.Events.Handlers.Item.ChangingAttachments -= ChangingAttachmentEvent;
             Exiled.Events.Handlers.Player.PickingUpItem -= OnPickingUpItem;
+            SettingBase.Unregister(settings: new[] { SettingsHeader });
             SettingBase.Unregister(settings: new[] { rampageKeybind });
             base.UnsubscribeEvents();
         }
@@ -85,11 +90,6 @@ namespace CaveiraPistol
                 if (effectWindows.ContainsKey(player) && keybind.KeyCode == playerKeybinds[player] && Check(player.CurrentItem))
                 {
                     ActivateEffects(player);
-                }
-                else
-                {
-                    if (Main.Instance.Config.Hint && Check(player.CurrentItem))
-                        player.ShowHint($"<color=red>{new string('\n', 5)}{string.Format(Main.Instance.Config.RampageFailUse)}</color>", 2);
                 }
             }
         }
